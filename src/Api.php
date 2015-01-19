@@ -119,4 +119,24 @@ abstract class Api
     {
         return $this->send(Http::DELETE, $api, $params, $callback);
     }
+
+    public static function guessProtocol()
+    {
+        return 443 === self::guessPort() ? 'https' : 'http';
+    }
+
+    public static function guessHost()
+    {
+        return $_SERVER['HTTP_HOST'];
+    }
+
+    public static function guessIp()
+    {
+        return '127.0.0.1';
+    }
+
+    public static function guessPort()
+    {
+        return (int) $_SERVER['SERVER_PORT'];
+    }
 }
