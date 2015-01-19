@@ -7,7 +7,9 @@
         'host' => Rde\Api::guessHost(),
         'ip' => Rde\Api::guessIp(),
         'port' => Rde\Api::guessPort(),
-        'path' => 'BBLB/api/'
+        'path' => 'BBLB/api/',
+        'auth_basic_user' => 'xxx',
+        'auth_basic_pwd' => 'xxxxxxxxxxx',
     ));
 
     $data = $api->get('test/api', array('a' => 'b'), function($req, $res){
