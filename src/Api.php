@@ -100,6 +100,15 @@ abstract class Api
         return $response->body;
     }
 
+    public function withCookies(array $cookies)
+    {
+        $tmp = array();
+        foreach ($_COOKIE as $key => $val) {
+            $cookie_string[] = "{$key}={$val}";
+        }
+        ! empty($tmp) and $this->setHeader('Cookie', join($tmp, '; '));
+    }
+
     public function get($api, array $params = null, $callback = null)
     {
         return $this->send(Http::GET, $api, $params, $callback);
