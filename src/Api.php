@@ -102,11 +102,11 @@ abstract class Api
 
     public function withCookies(array $cookies)
     {
-        $tmp = array();
+        $cookie_string = array();
         foreach ($cookies as $key => $val) {
             $cookie_string[] = "{$key}={$val}";
         }
-        ! empty($tmp) and $this->setHeader('Cookie', join($tmp, '; '));
+        ! empty($cookie_string) and $this->setHeader('Cookie', join($cookie_string, '; '));
     }
 
     public function get($api, array $params = null, $callback = null)
