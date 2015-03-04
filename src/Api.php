@@ -103,7 +103,7 @@ abstract class Api
     public function withCookies(array $cookies)
     {
         $tmp = array();
-        foreach ($_COOKIE as $key => $val) {
+        foreach ($cookies as $key => $val) {
             $cookie_string[] = "{$key}={$val}";
         }
         ! empty($tmp) and $this->setHeader('Cookie', join($tmp, '; '));
