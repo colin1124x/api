@@ -14,7 +14,10 @@ class ApiTest extends PHPUnit_Framework_TestCase
         );
         $bblb = new Rde\Api\BBLB($config);
 
-        $bblb->send('get', 'test/api', array('a' => 'b'), null, function($req) use($tester) {
+        $send_callback = false;
+        $bblb->send('get', 'test/api', array('a' => 'b'), null, null, function($req) use($tester, &$send_callback) {
+
+            $send_callback = true;
 
             /** @var Httpful\Request $req */
             $tester->assertEquals(
@@ -40,5 +43,42 @@ class ApiTest extends PHPUnit_Framework_TestCase
             return false;
         });
 
+        $this->assertTrue($send_callback);
+    }
+
+    public function testPortal()
+    {
+        $tester = $this;
+
+        $config = array(
+            'protocol' => 'http',
+            'ip' => '123.4.5.6',
+            'host' => 'ipl.member.webservice',
+            'port' => 99,
+            'path' => 'app/WebService/view/display.php',
+        );
+
+        $api = new Rde\Api($config);
+
+        $api->requestError(function($self, $req, $e){
+
+        });
+
+        $send_callback = false;
+        $api->send('get', 'GameSwitch', array('hallid' => 6, 'userid' => 123), null, null, function($req) use($tester, &$send_callback) {
+
+            $send_callback = true;
+
+            /** @var Httpful\Request $req */
+            $tester->assertEquals(
+                'http://123.4.5.6:99/app/WebService/view/display.php/GameSwitch?hallid=6&userid=123',
+                $req->uri,
+                '檢查 api uri'
+            );
+
+//            return false;
+        });
+
+        $this->assertTrue($send_callback, '檢查 send callback');
     }
 }

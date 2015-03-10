@@ -4,13 +4,17 @@ use Httpful\Request;
 use Httpful\Response;
 use Httpful\Mime;
 use Httpful\Http;
+use SebastianBergmann\Exporter\Exception;
 
-abstract class Api
+class Api
 {
     private $url;
     private $auth_basic_user;
     private $auth_basic_pwd;
     private $headers = array();
+    private $request_before_handlers = array();
+    private $request_after_handlers = array();
+    private $request_error_handlers = array();
 
     public function __construct(array $config)
     {
@@ -50,19 +54,50 @@ abstract class Api
         return rtrim("{$protocol}://{$ip}{$port}/{$path}", '/');
     }
 
-    final public function send($method, $api, array $params = null, $callback = null, $profile = null)
+    final public function requestBefore($callable)
+    {
+        is_callable($callable) and $this->request_before_handlers[] = $callable;
+    }
+
+    final public function requestAfter($callable)
+    {
+        is_callable($callable) and $this->request_after_handlers[] = $callable;
+    }
+
+    final public function requestError($callable)
+    {
+        is_callable($callable) and $this->request_error_handlers[] = $callable;
+    }
+
+    final public function fire(array $handlers, $args)
+    {
+        foreach ($handlers as $callback) {
+            try {
+                call_user_func_array($callback, $args);
+            } catch (\Exception $e) {}
+        }
+    }
+
+    final public function send($method, $api, array $params = null, $accept = null, $reject = null, $profile = null)
     {
         $method = strtoupper($method);
         $full_url = $this->url.'/'.trim($api, '/');
-        $request = Request::init($method)->uri($full_url)
-            ->authenticateWith($this->auth_basic_user, $this->auth_basic_pwd)
-            ->whenError(function($msg){
-                throw new \RuntimeException(get_called_class().' say: '.$msg);
-            })
-            ->parseWith(function($body) {
-                return json_decode($body, true);
-            })
-            ->expects(Mime::JSON);
+
+        // 設定目標網址
+        $request = Request::init($method)->uri($full_url);
+        $request->whenError(function($msg){
+            throw new \Exception($msg);
+        });
+
+        // 假如有指定 auth basic 驗證帳密
+        null !== $this->auth_basic_user and
+            $request->authenticateWith($this->auth_basic_user, $this->auth_basic_pwd);
+
+        // 設定解析方式
+        $request->parseWith(function($body) {
+            return json_decode($body, true);
+        })
+        ->expects(Mime::JSON);
 
         if ( ! empty($params)) {
             switch ($method) {
@@ -87,17 +122,36 @@ abstract class Api
             return null;
         }
 
-        /** @var Response $response */
-        $response = $request->send();
+        $exception = null;
+        try {
+            $this->fire($this->request_before_handlers, array($this, $request));
 
-        is_callable($callback) and
-            call_user_func($callback, $request, $response);
+            /** @var Response $response */
+            $response = $request->send();
 
-        if (200 !== $response->code) {
-            return false;
+            if (200 === $response->code) {
+                is_callable($accept) and
+                    call_user_func($accept, $request, $response);
+
+                $this->fire($this->request_after_handlers, array($this, $request, $response));
+
+                return $response->body;
+            }
+
+            $exception = new Exception("response status error [{$response->code}]");
+
+        } catch (\Exception $e) {
+
+            $exception = $e;
+
         }
 
-        return $response->body;
+        is_callable($reject) and
+            call_user_func($reject, $this, $request, $exception);
+
+        $this->fire($this->request_error_handlers, array($this, $request, $exception));
+
+        return false;
     }
 
     public function withCookies(array $cookies)
