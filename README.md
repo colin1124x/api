@@ -12,9 +12,18 @@
         'auth_basic_pwd' => 'xxxxxxxxxxx',
     ));
 
-    $data = $api->get('test/api', array('a' => 'b'), function($req, $res){
-        // 如果需要 Log 寫在這
-        // $req Httpful/Request 請求物件
-        // $res Httpful/Response 回應物件
-    });
+    $data = $api->get(
+        'test/api', 
+        array('a' => 'b'), 
+        function($res_body, $response){
+            // accept callback
+        },
+        function($code, $err_msg, $res_raw_body){
+            // reject callback
+        },
+        function($request){
+            // profile callback
+            // just for test
+        }
+    );
 ```

@@ -4,7 +4,6 @@ use Httpful\Request;
 use Httpful\Response;
 use Httpful\Mime;
 use Httpful\Http;
-use SebastianBergmann\Exporter\Exception;
 
 class Api
 {
@@ -140,7 +139,7 @@ class Api
                 return $response->body;
             }
 
-            $exception = new Exception("response status error [{$response->code}]");
+            $exception = new \Exception("response status error [{$response->code}]");
 
         } catch (\Exception $e) {
 
@@ -148,8 +147,10 @@ class Api
 
         }
 
-        is_callable($reject) and
-            call_user_func($reject, $this, $request, $exception);
+        is_callable($reject) and $reject(
+            $exception->getCode(),
+            $exception->getMessage(),
+            $response ? $response->raw_body : '');
 
         $raw_headers = $response ? $response->raw_headers : '';
         $this->fire($this->request_error_handlers, array($this, $raw_headers, $exception));
