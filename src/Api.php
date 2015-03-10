@@ -122,6 +122,7 @@ class Api
             return null;
         }
 
+        $response = null;
         $exception = null;
         try {
             $this->fire($this->request_before_handlers, array($this, $request));
@@ -130,10 +131,11 @@ class Api
             $response = $request->send();
 
             if (200 === $response->code) {
-                is_callable($accept) and
-                    call_user_func($accept, $request, $response);
 
                 $this->fire($this->request_after_handlers, array($this, $request, $response));
+
+                is_callable($accept) and
+                    call_user_func($accept, $response->body, $response);
 
                 return $response->body;
             }
@@ -149,7 +151,8 @@ class Api
         is_callable($reject) and
             call_user_func($reject, $this, $request, $exception);
 
-        $this->fire($this->request_error_handlers, array($this, $request, $exception));
+        $raw_headers = $response ? $response->raw_headers : '';
+        $this->fire($this->request_error_handlers, array($this, $raw_headers, $exception));
 
         return false;
     }
