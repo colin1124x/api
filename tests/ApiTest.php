@@ -64,6 +64,8 @@ class ApiTest extends PHPUnit_Framework_TestCase
 
         });
 
+        $api->timeout(1);
+
         $send_callback = false;
         $api->send('get', 'GameSwitch', array('hallid' => 6, 'userid' => 123), null, null, function($req) use($tester, &$send_callback) {
 
@@ -76,7 +78,6 @@ class ApiTest extends PHPUnit_Framework_TestCase
                 '檢查 api uri'
             );
 
-            $req->timeout(1);
         });
 
         $this->assertTrue($send_callback, '檢查 send callback');

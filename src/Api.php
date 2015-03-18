@@ -10,6 +10,7 @@ class Api
     private $url;
     private $auth_basic_user;
     private $auth_basic_pwd;
+    private $timeout;
     private $headers = array();
     private $request_before_handlers = array();
     private $request_after_handlers = array();
@@ -41,6 +42,11 @@ class Api
     final public function getHeaders()
     {
         return $this->headers;
+    }
+
+    final public function timeout($seconds)
+    {
+        $this->timeout = (int) $seconds;
     }
 
     final public function build_url(array $config)
@@ -116,6 +122,8 @@ class Api
         if ( ! empty($headers)) {
             $request->addHeaders($headers);
         }
+
+        null !== $this->timeout and $request->timeout($this->timeout);
 
         if (is_callable($profile) && false === $profile($request)) {
             return null;
