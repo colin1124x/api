@@ -76,7 +76,7 @@ class ApiTest extends PHPUnit_Framework_TestCase
                 '檢查 api uri'
             );
 
-//            return false;
+            $req->timeout(1);
         });
 
         $this->assertTrue($send_callback, '檢查 send callback');

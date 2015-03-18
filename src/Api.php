@@ -167,24 +167,24 @@ class Api
         ! empty($cookie_string) and $this->setHeader('Cookie', join($cookie_string, '; '));
     }
 
-    public function get($api, array $params = null, $callback = null)
+    public function get($api, array $params = null, $accept = null, $reject = null, $profile = null)
     {
-        return $this->send(Http::GET, $api, $params, $callback);
+        return $this->send(Http::GET, $api, $params, $accept, $reject, $profile);
     }
 
-    public function post($api, array $params = null, $callback = null)
+    public function post($api, array $params = null, $accept = null, $reject = null, $profile = null)
     {
-        return $this->send(Http::POST, $api, $params, $callback);
+        return $this->send(Http::POST, $api, $params, $accept, $reject, $profile);
     }
 
-    public function put($api, array $params = null, $callback = null)
+    public function put($api, array $params = null, $accept = null, $reject = null, $profile = null)
     {
-        return $this->send(Http::PUT, $api, $params, $callback);
+        return $this->send(Http::PUT, $api, $params, $accept, $reject, $profile);
     }
 
-    public function delete($api, array $params = null, $callback = null)
+    public function delete($api, array $params = null, $accept = null, $reject = null, $profile = null)
     {
-        return $this->send(Http::DELETE, $api, $params, $callback);
+        return $this->send(Http::DELETE, $api, $params, $accept, $reject, $profile);
     }
 
     public static function guessProtocol()
