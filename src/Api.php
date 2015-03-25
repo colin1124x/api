@@ -91,6 +91,7 @@ class Api
         // 設定目標網址
         $request = Request::init($method)->uri($full_url);
         $request->whenError(function($msg){
+            // 必須註冊Error handler 才能阻止Request 呼叫 error_log($msg)
             throw new \Exception($msg);
         });
 
