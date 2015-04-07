@@ -2,7 +2,7 @@
 
 ### 建構基本 api 溝通物件 
 ``` php
-    $api = new Rde\Api\BBLB(array(
+    $api = new Rde\Api(array(
         'protocol' => Rde\Api::guessProtocol(),
         'host' => Rde\Api::guessHost(),
         'ip' => Rde\Api::guessIp(),
