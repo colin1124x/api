@@ -7,7 +7,7 @@
         'host' => Rde\Api::guessHost(),
         'ip' => Rde\Api::guessIp(),
         'port' => Rde\Api::guessPort(),
-        'path' => 'BBLB/api/',
+        'path' => 'base/api/path',
         'auth_basic_user' => 'xxx',
         'auth_basic_pwd' => 'xxxxxxxxxxx',
     ));
