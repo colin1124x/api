@@ -12,7 +12,7 @@ class ApiTest extends PHPUnit_Framework_TestCase
             'port' => 99,
             'path' => 'BBLB/api',
         );
-        $bblb = new Rde\Api\BBLB($config);
+        $bblb = new Rde\Api($config);
 
         $send_callback = false;
         $bblb->send('get', 'test/api', array('a' => 'b'), null, null, function($req) use($tester, &$send_callback) {
