@@ -2,6 +2,26 @@
 
 class ApiTest extends PHPUnit_Framework_TestCase
 {
+    public function testHTTPS()
+    {
+        $config = array(
+            'protocol' => 'https',
+            'ip' => '127.0.0.1',
+            'host' => 'test.ssl',
+//            'port' => 443,
+            'path' => '/',
+        );
+        $api = new Rde\Api($config);
+        $api->format('text', function($x){return $x;});
+
+        $code = null;
+        $api->get('index.php', null, function($body, \Httpful\Response $res) use(&$code) {
+            $code = $res->code;
+        });
+
+        $this->assertEquals(200, $code);
+    }
+
     public function testBBLB()
     {
         $tester = $this;

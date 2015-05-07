@@ -16,12 +16,26 @@ class Api
     private $request_after_handlers = array();
     private $request_error_handlers = array();
 
+    private $mime;
+    private $parser;
+
     public function __construct(array $config)
     {
         $this->url = $this->build_url($config);
         isset($config['host']) and $this->headers['Host'] = $config['host'];
         isset($config['auth_basic_user']) and $this->auth_basic_user = $config['auth_basic_user'];
         isset($config['auth_basic_pwd']) and $this->auth_basic_pwd = $config['auth_basic_pwd'];
+        // 預設使用json
+        $this->mime = Mime::JSON;
+        $this->parser = function($body){
+            return json_decode($body, true);
+        };
+    }
+
+    public function format($mime, \Closure $parser = null)
+    {
+        $this->mime = $mime;
+        $this->parser = $parser;
     }
 
     final public function setHeader($key, $value)
@@ -100,10 +114,8 @@ class Api
             $request->authenticateWith($this->auth_basic_user, $this->auth_basic_pwd);
 
         // 設定解析方式
-        $request->parseWith(function($body) {
-            return json_decode($body, true);
-        })
-        ->expects(Mime::JSON);
+        $request->parseWith($this->parser)
+        ->expects($this->mime);
 
         if ( ! empty($params)) {
             switch ($method) {
@@ -159,7 +171,8 @@ class Api
         is_callable($reject) and $reject(
             $exception->getCode(),
             $exception->getMessage(),
-            $response ? $response->raw_body : '');
+            $response ? $response->raw_body : '',
+            $exception);
 
         $raw_headers = $response ? $response->raw_headers : '';
         $this->fire($this->request_error_handlers, array($this, $raw_headers, $exception));
