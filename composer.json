@@ -1,6 +1,7 @@
 {
     "name": "rde/api",
     "description": "跨系統用api",
+    "license": "MIT",
     "authors": [
         {
             "name": "Colin",
