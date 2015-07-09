@@ -1,4 +1,5 @@
 ## rde/api
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/8136db13-5ced-44bd-83c5-bf5169980355/mini.png)](https://insight.sensiolabs.com/projects/8136db13-5ced-44bd-83c5-bf5169980355)
 
 ### 建構基本 api 溝通物件 
 ``` php
@@ -27,3 +28,4 @@
         }
     );
 ```
+
