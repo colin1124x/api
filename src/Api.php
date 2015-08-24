@@ -155,7 +155,15 @@ class Api
                 $this->fire($this->request_after_handlers, array($this, $request, $response));
 
                 is_callable($accept) and
-                    call_user_func($accept, $response->body, $response);
+                    call_user_func(
+                        $accept, 
+                        $response->body, 
+                        $response, 
+                        array(
+                            "method" => $method,
+                            "payload" => $params,
+                        )
+                    );
 
                 return $response->body;
             }

@@ -15,11 +15,11 @@
 
     $data = $api->get(
         'test/api', 
-        array('a' => 'b'), 
-        function($res_body, $response){
+        array("a" => "b"), 
+        function($body, $response, array("method" => 'GET', "payload" => array("a" => "b"))){
             // accept callback
         },
-        function($code, $err_msg, $res_raw_body){
+        function($code, $err_msg, $res_raw_body, $exception){
             // reject callback
         },
         function($request){
