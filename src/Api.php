@@ -67,10 +67,14 @@ class Api
     {
         $protocol = isset($config['protocol']) ? $config['protocol'] : null;
         $ip = isset($config['ip']) ? $config['ip'] : null;
+        $host = isset($config['host']) ? $config['host'] : null;
         $port = isset($config['port']) ? ':'.$config['port'] : null;
         $path = isset($config['path']) ? trim($config['path'], '/') : null;
 
-        return rtrim("{$protocol}://{$ip}{$port}/{$path}", '/');
+        $domain = $ip ?: $host;
+        if ( ! $domain) throw new \RuntimeException('缺少 ip 或 host');
+
+        return rtrim("{$protocol}://{$domain}{$port}/{$path}", '/');
     }
 
     final public function requestBefore($callable)
